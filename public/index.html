@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VisorTerminal</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css" />
+  <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xterm-addon-web-links@0.9.0/lib/xterm-addon-web-links.js"></script>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div id="bg"></div>
+
+  <aside id="sidebar">
+    <div id="sidebar-header">
+      <div id="logo">
+        <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
+          <rect width="28" height="28" rx="8" fill="url(#lg)"/>
+          <path d="M7 10h14M7 14h10M7 18h12" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="lg" x1="0" y1="0" x2="28" y2="28">
+              <stop offset="0%" stop-color="#7c3aed"/>
+              <stop offset="100%" stop-color="#2563eb"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div id="logo-text">
+          <span id="logo-title">VisorTerminal</span>
+          <span id="logo-sub">by Rollffin Guiroa</span>
+        </div>
+      </div>
+      <button id="btn-new-session" title="Nueva terminal (⌘⇧T)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+      </button>
+    </div>
+
+    <div id="session-list"></div>
+
+    <div id="sidebar-footer">
+      <button class="footer-btn" id="btn-settings" title="Ajustes">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+        <span>Ajustes</span>
+      </button>
+      <!-- Atajos tooltip -->
+      <div id="shortcuts-hint">
+        <span>⌘⇧T nueva · ⌘⇧W cerrar</span>
+        <span>⌘⇧D split · ⌘⇧[ ] navegar</span>
+      </div>
+    </div>
+  </aside>
+
+  <main id="main">
+    <div id="terminals-container"></div>
+
+    <section id="panel-settings" class="hidden">
+      <div id="settings-topbar">
+        <button id="btn-back-settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <h2>Ajustes</h2>
+      </div>
+      <div id="settings-content">
+
+        <div class="settings-group">
+          <h3>Tema</h3>
+          <div id="theme-picker">
+            <button class="theme-swatch active" data-theme="dracula"><span style="background:#282a36"></span><span style="background:#bd93f9"></span><label>Dracula</label></button>
+            <button class="theme-swatch" data-theme="tokyo"><span style="background:#1a1b26"></span><span style="background:#7aa2f7"></span><label>Tokyo Night</label></button>
+            <button class="theme-swatch" data-theme="nord"><span style="background:#2e3440"></span><span style="background:#88c0d0"></span><label>Nord</label></button>
+            <button class="theme-swatch" data-theme="catppuccin"><span style="background:#1e1e2e"></span><span style="background:#cba6f7"></span><label>Catppuccin</label></button>
+            <button class="theme-swatch" data-theme="monokai"><span style="background:#272822"></span><span style="background:#a6e22e"></span><label>Monokai</label></button>
+            <button class="theme-swatch" data-theme="github-dark"><span style="background:#0d1117"></span><span style="background:#58a6ff"></span><label>GitHub Dark</label></button>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <h3>Fuente</h3>
+          <div class="settings-row">
+            <label>Tamaño</label>
+            <div class="slider-wrap"><input type="range" id="font-size" min="10" max="24" value="14"/><span id="font-size-val">14px</span></div>
+          </div>
+          <div class="settings-row">
+            <label>Familia</label>
+            <select id="font-family">
+              <option value="'JetBrains Mono', monospace">JetBrains Mono</option>
+              <option value="'Fira Code', monospace">Fira Code</option>
+              <option value="'Cascadia Code', monospace">Cascadia Code</option>
+              <option value="'SF Mono', monospace">SF Mono</option>
+              <option value="Menlo, monospace">Menlo</option>
+              <option value="monospace">Monospace (sistema)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <h3>Fondo</h3>
+          <div class="settings-row">
+            <label>Estilo</label>
+            <select id="bg-style">
+              <option value="gradient">Gradiente del tema</option>
+              <option value="solid">Sólido</option>
+              <option value="image">Imagen personalizada</option>
+            </select>
+          </div>
+          <div id="bg-image-row" class="settings-row hidden">
+            <label>URL de imagen</label>
+            <input type="text" id="bg-image-url" placeholder="https://..."/>
+          </div>
+          <div class="settings-row">
+            <label>Opacidad terminal</label>
+            <div class="slider-wrap"><input type="range" id="opacity" min="50" max="100" value="92"/><span id="opacity-val">92%</span></div>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <h3>Terminal</h3>
+          <div class="settings-row">
+            <label>Cursor</label>
+            <select id="cursor-style">
+              <option value="block">Bloque</option>
+              <option value="underline">Subrayado</option>
+              <option value="bar">Barra</option>
+            </select>
+          </div>
+          <div class="settings-row toggle-row">
+            <label>Cursor parpadeante</label>
+            <label class="toggle"><input type="checkbox" id="cursor-blink" checked/><span class="toggle-slider"></span></label>
+          </div>
+        </div>
+
+        <div class="settings-group danger-group">
+          <h3>Restablecer</h3>
+          <div class="settings-row">
+            <label>Volver a los valores por defecto</label>
+            <button id="btn-reset" class="reset-btn">Restablecer</button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
