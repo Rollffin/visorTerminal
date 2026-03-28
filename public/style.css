@@ -223,7 +223,7 @@ body { display:flex; position:relative; z-index:1; }
 .topbar-btn:hover { background:rgba(255,255,255,0.08); color:var(--text); }
 .topbar-btn.active { color:var(--accent); }
 
-.terminal-wrap { flex:1; padding:12px; overflow:hidden; display:flex; }
+.terminal-wrap { flex:1; padding:12px 12px 44px; overflow:hidden; display:flex; }
 .terminal-box {
   flex:1; background:var(--surface); border:1px solid var(--surface-border);
   border-radius:var(--radius); padding:14px; overflow:hidden;
