@@ -52,7 +52,7 @@ Cada sesión de terminal es un proceso de shell real — soporte completo de col
 
 ```bash
 # 1. Clona el repositorio
-git clone https://github.com/tu-usuario/visorTerminal.git
+git clone https://github.com/Rollffin/visorTerminal.git
 cd visorTerminal
 
 # 2. Instala las dependencias
